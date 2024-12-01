@@ -9,7 +9,7 @@ const modeIcon = document.querySelector(".mode img");
 const modeTitle = document.querySelector(".mode h4");
 // popup
 const openPopup = document.querySelector(".openPopup");
-let counter;
+
 // sounds
 let tick = new Audio("sounds/click.mp3");
 
@@ -25,8 +25,11 @@ const modeObj = [
     {longBreak: 70}
 ];
 let selectedTime = modeObj[0].foucsMode;
+let changeIcon = play.firstChild.firstChild;
+let counter = null;
+let calseconds = 0;
+let isPaused = false;
 play.addEventListener("click", ()=>{
-    let changeIcon = play.firstChild.firstChild;
 
     if(changeIcon.src.endsWith("assets/play_arrow.svg")){
         changeIcon.src = "assets/pause.svg";
@@ -36,13 +39,14 @@ play.addEventListener("click", ()=>{
         changeIcon.src = "assets/play_arrow.svg";
         time.style.fontWeight = "400";
         tick.play();
-        clearInterval(counter)
+        pauseTimer();
     };
 });
 
 let convertNum = Number(mode_list.innerHTML);
 nextMode.addEventListener("click", ()=>{
-    clearInterval(counter)
+    if(changeIcon.src.endsWith("assets/pause.svg")){changeIcon.src = "assets/play_arrow.svg";}
+    clearInterval(counter);
     tick.play();
     if(convertNum < 3){convertNum++;mode_list.innerHTML = convertNum;}
     else if(convertNum > 0){convertNum = 1;mode_list.innerHTML = convertNum;}; 
@@ -66,24 +70,33 @@ nextMode.addEventListener("click", ()=>{
 
 const startTimer = ()=>{
     tick.play();
-    let seconds = selectedTime * 60;
-   counter = setInterval(()=>{
-        seconds--;
-        let minutes = Math.floor(seconds / 60);
-        let finalSeconds = seconds % 60;
-        if(minutes < 10){
-            time.innerHTML = `0${minutes}<br>${finalSeconds}`;
+    calseconds = selectedTime * 60;
+    counter = setInterval(()=>{
+
+        if(calseconds > 0){
+            calseconds--;
+            updateDisplay();
+        }else{
+            clearInterval(counter);
+            counter = null;
         }
-        else{
-        time.innerHTML = `${minutes}<br>${finalSeconds}`;
-        }
-        
-    }, 1000)
-    if(seconds === 0){
-        clearInterval(counter);
+    }, 1000);
+
+};
+
+
+const updateDisplay = ()=>{
+    let minutes = Math.floor(calseconds / 60);
+    let seconds = calseconds % 60;
+    if(minutes < 10){
+        time.innerHTML = `0${minutes}<br>${seconds}`;
+    }
+    else{
+        time.innerHTML = `${minutes}<br>${seconds}`;
     }
 };
 
-openPopup.addEventListener("click", ()=>{
-
-});
+const pauseTimer = ()=>{
+    clearInterval(counter);
+    isPaused = true;
+};
