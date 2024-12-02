@@ -28,10 +28,10 @@ let currentThemeIndex = 0;
 // modes
 const modeObj = [
     {focusMode: 25},
-    {shortBreak: 1},
+    {shortBreak: 5},
     {longBreak: 40}
 ];
-let selectedTime = modeObj[0].foucsMode;
+let selectedTime = modeObj[0].focusMode;
 let changeIcon = play.firstChild.firstChild;
 let counter = null;
 let calseconds = 0;
@@ -54,7 +54,7 @@ play.addEventListener("click", ()=>{
 });
 
 // changing the mode
-nextMode.addEventListener("click", ()=>{
+const changetheMode = ()=>{
     clickAudio();
     if(changeIcon.src.endsWith("assets/pause.svg")){changeIcon.src = "assets/play_arrow.svg";}
     clearInterval(counter);
@@ -64,17 +64,20 @@ nextMode.addEventListener("click", ()=>{
     else if(convertNum > 0){convertNum = 1;mode_list.innerHTML = convertNum;}; 
     currentThemeIndex = (currentThemeIndex + 1) % themes.length;
     changeMode();
-});
+}
+nextMode.addEventListener("click", changetheMode);
 
 // countdown funcationlity 
 const startTimer = ()=>{
     clickAudio();
     if (!isPaused) {
         calseconds = selectedTime * 60;
+        console.log(calseconds)
     }
     counter = setInterval(()=>{
         if(calseconds > 0){
             calseconds--;
+            console.log(calseconds)
             updateDisplay();
         }else{
             clearInterval(counter);
@@ -142,7 +145,7 @@ popBtn.addEventListener("click", () => {
             window.alert(`${property} limit is ${max}`);
         } else {
             modeObj[modeIndex][property] = userValue;
-            changeMode();
+            changetheMode();
         };
     });
     
