@@ -32,6 +32,12 @@
     --color: #14401d;
     --other-option: #4dda6e9e;
 }
+input{
+   font-family: "Inter Tight", sans-serif;
+}
+input:focus{
+    outline: none;
+}
 body{
     font-family: "Inter Tight", serif;
     display: flex;
@@ -40,6 +46,19 @@ body{
     height: 100vh;
     position: relative;
     background: var(--background-color);
+}
+.btn-primary{
+    padding: 12px 29px;
+    font-size: 16px;
+    font-family: "Inter Tight", sans-serif;
+    font-weight: 500;
+    border: 1px solid var(--mode-color);
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--other-option);
+}
+.btn-primary:hover{
+    opacity: 0.9;
 }
 #app{
     width: 600px;
@@ -118,13 +137,13 @@ body{
     right: 5%;
     cursor: pointer;
 }
-.openPopup h5 img{
-    width: 44px;
+.openPopup h5 img:hover, .popup h4 span img:hover{
+    background: var(--mode-color);
+}
+.openPopup h5 img,.popup h4 span img{
     padding: 8px;
     border-radius: 6px;
-}
-.openPopup h5 img:hover{
-    background: var(--mode-color);
+    width: 44px;
 }
 /* settings */
 .settings{
@@ -144,12 +163,22 @@ body{
     border-radius: 6px;
     padding: 32px;
     border: 2px solid var(--mode-color);
+    position: relative;
+}
+.popup button{
+    position: absolute;
+    bottom: 4%;
+    right: 6%;
 }
 .popup h4{
     font-size: 24px;
-    color: gray;
+    color: rgb(85, 83, 83);
     position: relative;
     padding-block-end: 12px;
+    justify-content: space-between;
+}
+.popup h4 span img{
+    cursor: pointer;
 }
 .popup h4::after{
     content: "";
@@ -160,7 +189,85 @@ body{
     bottom: 0;
     left: 0;
 }
-
+.popup .sec{
+    margin-block-start: 22px;
+}
+.popup .sec h5{
+    font-size: 16px;
+    color: gray;
+    font-weight: 600;
+}
+.group_sec{
+    margin-block-start: 17px;
+    justify-content: space-between;
+}
+.group_sec label{
+    font-size: 18px;
+    font-weight: 500;
+    color: #292828;
+    width: 70%;
+}
+.group_sec input{
+    font-size: 18px;
+    text-align: center  ;
+    width: 30%;
+    padding: 4px;
+    border: 1px solid #dddddd;
+    border-radius: 6px;
+}
+.group_sec input:focus{
+    box-shadow: 0px 0px 4px 0px #d7d7d7;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.switch input { 
+    opacity: 0;
+    z-index: 10;
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    padding: 50px;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 6px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+.switch input:checked + .slider {
+    background-color: var(--other-option);
+}
+.switch input:focus + .slider {
+    box-shadow: 0 0 1px var(--other-option);
+}
+.switch input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+  
 /* media queries */
 @media screen and (max-width: 720px) {
     #app{
@@ -195,7 +302,15 @@ body{
     }
     .openPopup{
         top: 3%;
-        bottom: inherit;
-        
+        bottom: inherit;   
+    }
+    .popup{
+        width: 90%;
+    }
+    .popup h4{
+        font-size: 20px;
+    }
+    .popup h4 span img{
+        width: 40px;
     }
 }

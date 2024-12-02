@@ -9,9 +9,16 @@ const modeIcon = document.querySelector(".mode img");
 const modeTitle = document.querySelector(".mode h4");
 // popup
 const openPopup = document.querySelector(".openPopup");
+const closePopup = document.querySelector(".closePopup");
+const setting = document.querySelector(".settings");
+let usrFocus = document.getElementById("focusMode");
+let usrShort = document.getElementById("shortBreak");
+let usrLong = document.getElementById("longBreak");
+const popBtn = document.querySelector(".popup button");
+const lofi = document.getElementById("lofi");
 
 // sounds
-
+let lofiAudio = new Audio("sounds/lofi.mp3");
 
 // others
 const themes = ["red", "blue", "green"];
@@ -20,7 +27,7 @@ const modeImg = ["assets/focus.svg", "assets/shortbreak.svg", "assets/longbreak.
 let currentThemeIndex = 0;
 // modes
 const modeObj = [
-    {foucsMode: 25,},
+    {focusMode: 25},
     {shortBreak: 1},
     {longBreak: 40}
 ];
@@ -110,3 +117,41 @@ const changeMode = ()=>{
     modeIcon.src = `${modeImg[currentThemeIndex]}`;
     document.body.setAttribute("data-theme", nextTheme);
 };
+
+// popup
+openPopup.addEventListener("click", ()=>{
+    setting.style.transform = "translateY(0px)"
+});
+const popUpclose = () =>{
+   setting.style.transform = "translateY(1000px)"
+}
+closePopup.addEventListener("click", popUpclose);
+
+
+popBtn.addEventListener("click", () => {
+    const limits = [
+        { input: usrFocus, max: 60, defaultValue: 25, property: "focusMode", modeIndex: 0 },
+        { input: usrShort, max: 30, defaultValue: 5, property: "shortBreak", modeIndex: 1 },
+        { input: usrLong, max: 120, defaultValue: 40, property: "longBreak", modeIndex: 2 }
+    ];
+
+    limits.forEach(({ input, max, defaultValue, property, modeIndex }) => {
+        const userValue = Number(input.value);
+        if (userValue > max) {
+            input.value = defaultValue;
+            window.alert(`${property} limit is ${max}`);
+        } else {
+            modeObj[modeIndex][property] = userValue;
+            changeMode();
+        };
+    });
+    
+    if(lofi.checked){
+        lofiAudio.play();
+    }
+    else{
+        lofiAudio.pause();
+        lofiAudio.currentTime = 0;
+    }
+    popUpclose();
+});
