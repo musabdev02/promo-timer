@@ -29,6 +29,9 @@ let changeIcon = play.firstChild.firstChild;
 let counter = null;
 let calseconds = 0;
 let isPaused = false;
+let convertNum = Number(mode_list.innerHTML);
+
+// change icons play and pause resume timer
 play.addEventListener("click", ()=>{
 
     if(changeIcon.src.endsWith("assets/play_arrow.svg")){
@@ -43,33 +46,20 @@ play.addEventListener("click", ()=>{
     };
 });
 
-let convertNum = Number(mode_list.innerHTML);
+// changing the mode
 nextMode.addEventListener("click", ()=>{
+    clickAudio();
     if(changeIcon.src.endsWith("assets/pause.svg")){changeIcon.src = "assets/play_arrow.svg";}
     clearInterval(counter);
     isPaused = false
     calseconds = 0;
-    clickAudio();
     if(convertNum < 3){convertNum++;mode_list.innerHTML = convertNum;}
     else if(convertNum > 0){convertNum = 1;mode_list.innerHTML = convertNum;}; 
-
     currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-
-    const nextTheme = themes[currentThemeIndex];
-    modeTitle.textContent = modes[currentThemeIndex];
-    modeIcon.src = `${modeImg[currentThemeIndex]}`;
-    const firstKey = Object.keys(modeObj[currentThemeIndex])[0];
-    selectedTime = modeObj[currentThemeIndex][firstKey];
-    document.body.setAttribute("data-theme", nextTheme);
-    if(selectedTime < 10){
-        time.innerHTML = `0${selectedTime}<br>00`;
-    }
-    else{
-    time.innerHTML = `${selectedTime}<br>00`;
-    }
-    
+    changeMode();
 });
 
+// countdown funcationlity 
 const startTimer = ()=>{
     clickAudio();
     if (!isPaused) {
@@ -83,32 +73,40 @@ const startTimer = ()=>{
             clearInterval(counter);
             counter = null;
             endAudio();
-            console.log(isPaused)
+            changeIcon.src = "assets/play_arrow.svg";
         }
     }, 1000);
 
 };
 
-
+// display the timer on document
 const updateDisplay = ()=>{
     let minutes = Math.floor(calseconds / 60);
     let seconds = calseconds % 60;
-    if(minutes < 10){
-        time.innerHTML = `0${minutes}<br>${seconds}`;
-    }
-    else{
-        time.innerHTML = `${minutes}<br>${seconds}`;
-    }
+    time.innerHTML = `${minutes.toString().padStart(2, 0)}<br>${seconds.toString().padStart(2, 0)}`;
+    document.title = `${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`;
 };
-
+// pause the timer
 const pauseTimer = ()=>{
     clearInterval(counter);
     isPaused = true;
 };
-
+// when clicks on button
 const clickAudio = () =>{
     let tick = new Audio("sounds/click.mp3").play();
 };
+// when the timer end
 const endAudio = () =>{
     let endAudio = new Audio("sounds/end.wav").play();
+};
+
+// mode & theme
+const changeMode = ()=>{
+    const firstKey = Object.keys(modeObj[currentThemeIndex])[0];
+    selectedTime = modeObj[currentThemeIndex][firstKey];
+    time.innerHTML = `${selectedTime.toString().padStart(2, 0)}<br>00`;
+    const nextTheme = themes[currentThemeIndex];
+    modeTitle.textContent = modes[currentThemeIndex];
+    modeIcon.src = `${modeImg[currentThemeIndex]}`;
+    document.body.setAttribute("data-theme", nextTheme);
 };
