@@ -11,7 +11,7 @@ const modeTitle = document.querySelector(".mode h4");
 const openPopup = document.querySelector(".openPopup");
 
 // sounds
-let tick = new Audio("sounds/click.mp3");
+
 
 // others
 const themes = ["red", "blue", "green"];
@@ -22,7 +22,7 @@ let currentThemeIndex = 0;
 const modeObj = [
     {foucsMode: 25,},
     {shortBreak: 1},
-    {longBreak: 70}
+    {longBreak: 40}
 ];
 let selectedTime = modeObj[0].foucsMode;
 let changeIcon = play.firstChild.firstChild;
@@ -38,7 +38,7 @@ play.addEventListener("click", ()=>{
     }else{
         changeIcon.src = "assets/play_arrow.svg";
         time.style.fontWeight = "400";
-        tick.play();
+        clickAudio();
         pauseTimer();
     };
 });
@@ -47,7 +47,9 @@ let convertNum = Number(mode_list.innerHTML);
 nextMode.addEventListener("click", ()=>{
     if(changeIcon.src.endsWith("assets/pause.svg")){changeIcon.src = "assets/play_arrow.svg";}
     clearInterval(counter);
-    tick.play();
+    isPaused = false
+    calseconds = 0;
+    clickAudio();
     if(convertNum < 3){convertNum++;mode_list.innerHTML = convertNum;}
     else if(convertNum > 0){convertNum = 1;mode_list.innerHTML = convertNum;}; 
 
@@ -69,16 +71,19 @@ nextMode.addEventListener("click", ()=>{
 });
 
 const startTimer = ()=>{
-    tick.play();
-    calseconds = selectedTime * 60;
+    clickAudio();
+    if (!isPaused) {
+        calseconds = selectedTime * 60;
+    }
     counter = setInterval(()=>{
-
         if(calseconds > 0){
             calseconds--;
             updateDisplay();
         }else{
             clearInterval(counter);
             counter = null;
+            endAudio();
+            console.log(isPaused)
         }
     }, 1000);
 
@@ -99,4 +104,11 @@ const updateDisplay = ()=>{
 const pauseTimer = ()=>{
     clearInterval(counter);
     isPaused = true;
+};
+
+const clickAudio = () =>{
+    let tick = new Audio("sounds/click.mp3").play();
+};
+const endAudio = () =>{
+    let endAudio = new Audio("sounds/end.wav").play();
 };
