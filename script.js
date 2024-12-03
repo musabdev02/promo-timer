@@ -1,160 +1,156 @@
-// DOM elements
-const time = document.querySelector(".time h1");
-const play = document.querySelector(".controls .play_pause");
-const nextMode = document.querySelector(".controls .next");
-let mode_list = document.querySelector(".mode_list span");
-const body = document.body;
-const modeTag = document.querySelector(".mode");
-const modeIcon = document.querySelector(".mode img");
-const modeTitle = document.querySelector(".mode h4");
-// popup
-const openPopup = document.querySelector(".openPopup");
-const closePopup = document.querySelector(".closePopup");
-const setting = document.querySelector(".settings");
-let usrFocus = document.getElementById("focusMode");
-let usrShort = document.getElementById("shortBreak");
-let usrLong = document.getElementById("longBreak");
-const popBtn = document.querySelector(".popup button");
-const lofi = document.getElementById("lofi");
+// DOM Elements
+const timerDisplay = document.querySelector(".time h1");
+const playPauseBtn = document.querySelector(".controls .play_pause");
+const nextModeBtn = document.querySelector(".controls .next");
+const modeIndicator = document.querySelector(".mode_list span");
+const bodyElement = document.body;
+const modeSection = document.querySelector(".mode");
+const modeIcon = modeSection.querySelector("img");
+const modeTitle = modeSection.querySelector("h4");
+const resetButton = document.querySelector(".controls .restart");
 
-// sounds
-let lofiAudio = new Audio("sounds/lofi.mp3");
+// Popup Elements
+const popupTrigger = document.querySelector(".openPopup");
+const popupClose = document.querySelector(".closePopup");
+const settingsPopup = document.querySelector(".settings");
+const focusInput = document.getElementById("focusMode");
+const shortBreakInput = document.getElementById("shortBreak");
+const longBreakInput = document.getElementById("longBreak");
+const popupSaveBtn = document.querySelector(".popup button");
+const lofiCheckbox = document.getElementById("lofi");
 
-// others
+// Sounds
+const lofiAudio = new Audio("sounds/lofi.mp3");
+const clickSound = new Audio("sounds/click.mp3");
+const endSound = new Audio("sounds/end.wav");
+
+// Themes, Modes, and Settings
 const themes = ["red", "blue", "green"];
-const modes = ["focus", "shortbreak", "longbreak"];
-const modeImg = ["assets/focus.svg", "assets/shortbreak.svg", "assets/longbreak.svg"];
-let currentThemeIndex = 0;
-// modes
-const modeObj = [
-    {focusMode: 25},
-    {shortBreak: 5},
-    {longBreak: 40}
+const modes = ["Focus", "Short Break", "Long Break"];
+const modeIcons = ["assets/focus.svg", "assets/shortbreak.svg", "assets/longbreak.svg"];
+const modeSettings = [
+    { name: "Focus", duration: 25 },
+    { name: "Short Break", duration: 5 },
+    { name: "Long Break", duration: 40 }
 ];
-let selectedTime = modeObj[0].focusMode;
-let changeIcon = play.firstChild.firstChild;
-let counter = null;
-let calseconds = 0;
+
+let currentModeIndex = 0;
+let timerSeconds = modeSettings[0].duration * 60;
+let timerInterval = null;
 let isPaused = false;
-let convertNum = Number(mode_list.innerHTML);
 
-// change icons play and pause resume timer
-play.addEventListener("click", ()=>{
+// Update UI Elements
+const updateTimerDisplay = () => {
+    const minutes = Math.floor(timerSeconds / 60);
+    const seconds = timerSeconds % 60;
+    timerDisplay.innerHTML = `${minutes.toString().padStart(2, '0')}<br>${seconds.toString().padStart(2, '0')}`;
+    document.title = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
 
-    if(changeIcon.src.endsWith("assets/play_arrow.svg")){
-        changeIcon.src = "assets/pause.svg";
-        time.style.fontWeight = "700";
-        startTimer();
-    }else{
-        changeIcon.src = "assets/play_arrow.svg";
-        time.style.fontWeight = "400";
-        clickAudio();
-        pauseTimer();
-    };
-});
+const updateMode = () => {
+    const mode = modeSettings[currentModeIndex];
+    timerSeconds = mode.duration * 60;
+    modeTitle.textContent = mode.name;
+    modeIcon.src = modeIcons[currentModeIndex];
+    bodyElement.setAttribute("data-theme", themes[currentModeIndex]);
+    updateTimerDisplay();
+};
 
-// changing the mode
-const changetheMode = ()=>{
-    clickAudio();
-    if(changeIcon.src.endsWith("assets/pause.svg")){changeIcon.src = "assets/play_arrow.svg";}
-    clearInterval(counter);
-    isPaused = false
-    calseconds = 0;
-    if(convertNum < 3){convertNum++;mode_list.innerHTML = convertNum;}
-    else if(convertNum > 0){convertNum = 1;mode_list.innerHTML = convertNum;}; 
-    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-    changeMode();
-}
-nextMode.addEventListener("click", changetheMode);
+// Timer Controls
+const startTimer = () => {
+    clickSound.play();
+    if (!isPaused) timerSeconds = modeSettings[currentModeIndex].duration * 60;
 
-// countdown funcationlity 
-const startTimer = ()=>{
-    clickAudio();
-    if (!isPaused) {
-        calseconds = selectedTime * 60;
-        console.log(calseconds)
-    }
-    counter = setInterval(()=>{
-        if(calseconds > 0){
-            calseconds--;
-            console.log(calseconds)
-            updateDisplay();
-        }else{
-            clearInterval(counter);
-            counter = null;
-            endAudio();
-            changeIcon.src = "assets/play_arrow.svg";
+    timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+            timerSeconds--;
+            updateTimerDisplay();
+        } else {
+            clearInterval(timerInterval);
+            endSound.play();
+            resetPlayPauseIcon();
         }
     }, 1000);
-
 };
 
-// display the timer on document
-const updateDisplay = ()=>{
-    let minutes = Math.floor(calseconds / 60);
-    let seconds = calseconds % 60;
-    time.innerHTML = `${minutes.toString().padStart(2, 0)}<br>${seconds.toString().padStart(2, 0)}`;
-    document.title = `${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`;
-};
-// pause the timer
-const pauseTimer = ()=>{
-    clearInterval(counter);
+const pauseTimer = () => {
+    clearInterval(timerInterval);
     isPaused = true;
 };
-// when clicks on button
-const clickAudio = () =>{
-    let tick = new Audio("sounds/click.mp3").play();
-};
-// when the timer end
-const endAudio = () =>{
-    let endAudio = new Audio("sounds/end.wav").play();
-};
 
-// mode & theme
-const changeMode = ()=>{
-    const firstKey = Object.keys(modeObj[currentThemeIndex])[0];
-    selectedTime = modeObj[currentThemeIndex][firstKey];
-    time.innerHTML = `${selectedTime.toString().padStart(2, 0)}<br>00`;
-    const nextTheme = themes[currentThemeIndex];
-    modeTitle.textContent = modes[currentThemeIndex];
-    modeIcon.src = `${modeImg[currentThemeIndex]}`;
-    document.body.setAttribute("data-theme", nextTheme);
+const togglePlayPause = () => {
+    const playPauseIcon = playPauseBtn.querySelector("img");
+    if (playPauseIcon.src.endsWith("assets/play_arrow.svg")) {
+        playPauseIcon.src = "assets/pause.svg";
+        timerDisplay.style.fontWeight = "700"
+        startTimer();
+    } else {
+        playPauseIcon.src = "assets/play_arrow.svg";
+        timerDisplay.style.fontWeight = "inherit"
+        pauseTimer();
+    }
 };
 
-// popup
-openPopup.addEventListener("click", ()=>{
-    setting.style.transform = "translateY(0px)"
-});
-const popUpclose = () =>{
-   setting.style.transform = "translateY(1000px)"
-}
-closePopup.addEventListener("click", popUpclose);
+const resetPlayPauseIcon = () => {
+    playPauseBtn.querySelector("img").src = "assets/play_arrow.svg";
+};
 
+// Change Mode
+const changeMode = () => {
+    clickSound.play();
+    currentModeIndex = (currentModeIndex + 1) % modeSettings.length;
+    updateMode();
+    resetPlayPauseIcon();
+    clearInterval(timerInterval);
+    isPaused = false;
+};
 
-popBtn.addEventListener("click", () => {
-    const limits = [
-        { input: usrFocus, max: 60, defaultValue: 25, property: "focusMode", modeIndex: 0 },
-        { input: usrShort, max: 30, defaultValue: 5, property: "shortBreak", modeIndex: 1 },
-        { input: usrLong, max: 120, defaultValue: 40, property: "longBreak", modeIndex: 2 }
+// Popup Controls
+const openSettings = () => settingsPopup.style.transform = "translateY(0)";
+const closeSettings = () => settingsPopup.style.transform = "translateY(1000px)";
+
+const saveSettings = () => {
+    const userInputs = [
+        { input: focusInput, max: 60, default: 25, modeIndex: 0 },
+        { input: shortBreakInput, max: 30, default: 5, modeIndex: 1 },
+        { input: longBreakInput, max: 120, default: 40, modeIndex: 2 }
     ];
 
-    limits.forEach(({ input, max, defaultValue, property, modeIndex }) => {
-        const userValue = Number(input.value);
-        if (userValue > max) {
-            input.value = defaultValue;
-            window.alert(`${property} limit is ${max}`);
+    userInputs.forEach(({ input, max, default: defaultVal, modeIndex }) => {
+        const value = Number(input.value);
+        if (value > max) {
+            alert(`${modeSettings[modeIndex].name} limit is ${max}`);
+            input.value = defaultVal;
         } else {
-            modeObj[modeIndex][property] = userValue;
-            changetheMode();
-        };
+            modeSettings[modeIndex].duration = value;
+        }
     });
-    
-    if(lofi.checked){
+
+    if (lofiCheckbox.checked) {
         lofiAudio.play();
-    }
-    else{
+    } else {
         lofiAudio.pause();
         lofiAudio.currentTime = 0;
     }
-    popUpclose();
+
+    updateMode();
+    closeSettings();
+};
+
+// Event Listeners
+playPauseBtn.addEventListener("click", togglePlayPause);
+nextModeBtn.addEventListener("click", changeMode);
+resetButton.addEventListener("click", () => {
+    currentModeIndex = 0;
+    updateMode();
+    resetPlayPauseIcon();
+    clearInterval(timerInterval);
+    clickSound.play();
 });
+
+popupTrigger.addEventListener("click", openSettings);
+popupClose.addEventListener("click", closeSettings);
+popupSaveBtn.addEventListener("click", saveSettings);
+
+// Initialize
+updateMode();
